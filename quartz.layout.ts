@@ -8,8 +8,10 @@ export const sharedPageComponents: SharedLayout = {
   afterBody: [],
   footer: Component.Footer({
     links: {
-      GitHub: "https://github.com/jackyzha0/quartz",
-      "Discord Community": "https://discord.gg/cRFFHYye7t",
+      "Z TURNS": "https://zturnsgo.com",
+      GitHub: "https://github.com/shengdabai",
+      YouTube: "https://www.youtube.com/@zturns-zheteng",
+      "X (Twitter)": "https://x.com/tonyzturns",
     },
   }),
 }
@@ -41,7 +43,34 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Explorer(),
   ],
   right: [
-    Component.Graph(),
+    Component.Graph({
+      localGraph: {
+        drag: true,
+        zoom: true,
+        depth: 2,
+        scale: 1.3,
+        repelForce: 0.6,
+        centerForce: 0.35,
+        linkDistance: 38,
+        fontSize: 0.6,
+        opacityScale: 1.1,
+        showTags: true,
+        removeTags: [],
+      },
+      globalGraph: {
+        drag: true,
+        zoom: true,
+        depth: -1,
+        scale: 1.0,
+        repelForce: 0.8,
+        centerForce: 0.3,
+        linkDistance: 45,
+        fontSize: 0.65,
+        opacityScale: 1.2,
+        showTags: true,
+        removeTags: [],
+      },
+    }),
     Component.DesktopOnly(Component.TableOfContents()),
     Component.Backlinks(),
   ],
