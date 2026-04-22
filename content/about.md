@@ -42,15 +42,9 @@ I've trained C-suite executives in Chinese via international platforms, worked a
 ## Expertise
 
 ### Teaching Method
-My signature approach is the **Interlinear Translation Method**（四行对照）:
+My approach combines **Immersive Learning** and **Communicative Language Teaching (CLT)** — students learn by doing, not by drilling grammar rules. Real conversations from day one, grounded in context that actually matters to each learner.
 
-```
-汉字 → 拼音 → 逐字英译 → 自然英译
-```
-
-This four-layer structure lets learners build genuine comprehension rather than surface memorization.
-
-Through 200+ hours of teaching, I've mapped **85+ learner personas** into 4 core need clusters:
+Over **6,000+ hours** of teaching, I've worked with **200+ Chinese learners** and **2,000+ English learners** across one-on-one coaching, corporate training, and online programs. From that experience, I've mapped learner needs into 4 core clusters:
 
 | Cluster | Focus |
 |---------|-------|
