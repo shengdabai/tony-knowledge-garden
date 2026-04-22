@@ -1,3 +1,283 @@
 @use "./base.scss";
 
-// put your custom CSS here!
+// ============================================================
+// Z TURNS Knowledge Garden — Custom Styles
+// ============================================================
+
+// --- Brand tokens ---
+:root {
+  --zt-amber: #e7bd57;
+  --zt-amber-dim: rgba(231, 189, 87, 0.18);
+  --zt-amber-glow: rgba(231, 189, 87, 0.45);
+  --zt-amber-pulse: rgba(231, 189, 87, 0.08);
+  --zt-navy: #07111f;
+  --zt-radius: 8px;
+}
+
+// --- Page entrance animation ---
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+article {
+  animation: fadeInUp 0.45s ease both;
+}
+
+// --- Hero title gradient ---
+h1 {
+  background: linear-gradient(135deg, var(--zt-amber) 0%, #f5d680 50%, #c49a2a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// --- Blockquotes ---
+blockquote {
+  border-left: 3px solid var(--zt-amber);
+  background: var(--zt-amber-pulse);
+  border-radius: 0 var(--zt-radius) var(--zt-radius) 0;
+  padding: 0.75em 1.25em;
+  margin: 1.5em 0;
+  color: var(--darkgray);
+
+  p { margin: 0; }
+}
+
+// --- Code blocks ---
+pre {
+  border: 1px solid var(--zt-amber-dim);
+  border-radius: var(--zt-radius);
+  box-shadow: 0 0 12px var(--zt-amber-pulse);
+}
+
+// --- Tables ---
+table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th {
+    background: var(--zt-amber-dim);
+    color: var(--zt-amber);
+    border-bottom: 2px solid var(--zt-amber);
+    padding: 0.6em 0.9em;
+    text-align: left;
+  }
+
+  td {
+    border-bottom: 1px solid var(--lightgray);
+    padding: 0.5em 0.9em;
+  }
+
+  tr:hover td {
+    background: var(--zt-amber-pulse);
+  }
+}
+
+// --- Links ---
+a {
+  transition: color 0.2s, text-shadow 0.2s;
+
+  &:hover {
+    text-shadow: 0 0 8px var(--zt-amber-glow);
+  }
+}
+
+// --- Tags ---
+.tag-link, a.tag {
+  background: var(--zt-amber-dim) !important;
+  border: 1px solid var(--zt-amber) !important;
+  color: var(--zt-amber) !important;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.78em;
+  transition: background 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    background: var(--zt-amber) !important;
+    color: var(--zt-navy) !important;
+    box-shadow: 0 0 10px var(--zt-amber-glow);
+    text-shadow: none;
+  }
+}
+
+// ============================================================
+// Graph View — Glowing Cyberpunk Aesthetic
+// ============================================================
+
+@keyframes graphPulse {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+@keyframes nodeGlow {
+  0%, 100% { filter: drop-shadow(0 0 3px var(--zt-amber)); }
+  50%       { filter: drop-shadow(0 0 9px var(--zt-amber)) drop-shadow(0 0 18px var(--zt-amber-glow)); }
+}
+
+// Graph container background
+#graph-container,
+.graph-outer {
+  background: radial-gradient(ellipse at center, #0d1a2d 0%, var(--zt-navy) 100%);
+  border-radius: var(--zt-radius);
+  border: 1px solid var(--zt-amber-dim);
+  box-shadow: 0 0 30px rgba(7, 17, 31, 0.8), inset 0 0 60px rgba(7, 17, 31, 0.5);
+  overflow: hidden;
+
+  // Subtle grid overlay
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(231, 189, 87, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(231, 189, 87, 0.04) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+// SVG links (edges)
+.graph-outer svg .link,
+#graph-container svg line {
+  stroke: var(--zt-amber) !important;
+  stroke-opacity: 0.35;
+  stroke-width: 1px;
+  transition: stroke-opacity 0.3s;
+
+  &:hover {
+    stroke-opacity: 0.9;
+  }
+}
+
+// Node circles
+.graph-outer svg circle,
+#graph-container svg circle {
+  fill: var(--zt-amber) !important;
+  stroke: rgba(231, 189, 87, 0.6);
+  stroke-width: 1.5px;
+  animation: nodeGlow 3s ease-in-out infinite;
+  cursor: pointer;
+  transition: r 0.2s, fill 0.2s;
+
+  &:hover {
+    fill: #fff !important;
+    filter: drop-shadow(0 0 12px var(--zt-amber)) drop-shadow(0 0 24px var(--zt-amber-glow));
+  }
+}
+
+// Current node (highlighted)
+.graph-outer svg circle.active,
+#graph-container svg circle.active {
+  fill: #fff !important;
+  stroke: var(--zt-amber);
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 0 10px var(--zt-amber)) drop-shadow(0 0 20px var(--zt-amber-glow));
+  animation: nodeGlow 1.5s ease-in-out infinite;
+}
+
+// Node labels
+.graph-outer svg text,
+#graph-container svg text {
+  fill: rgba(231, 189, 87, 0.85) !important;
+  font-size: 10px !important;
+  font-family: "JetBrains Mono", monospace;
+  text-shadow: 0 0 6px rgba(231, 189, 87, 0.6);
+}
+
+// Global graph modal
+#global-graph-outer {
+  background: radial-gradient(ellipse at center, #0d1a2d 0%, var(--zt-navy) 100%);
+
+  svg line {
+    stroke: var(--zt-amber) !important;
+    stroke-opacity: 0.2;
+  }
+
+  svg circle {
+    fill: var(--zt-amber) !important;
+    animation: nodeGlow 4s ease-in-out infinite;
+
+    &:hover {
+      fill: #fff !important;
+      filter: drop-shadow(0 0 16px var(--zt-amber));
+    }
+  }
+
+  svg text {
+    fill: rgba(231, 189, 87, 0.7) !important;
+    font-size: 9px !important;
+  }
+}
+
+// ============================================================
+// Dark mode enhancements
+// ============================================================
+
+[saved-theme="dark"] {
+  h1 {
+    background: linear-gradient(135deg, #f5d680 0%, var(--zt-amber) 60%, #c49a2a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  blockquote {
+    background: rgba(231, 189, 87, 0.06);
+    border-left-color: var(--zt-amber);
+  }
+
+  pre {
+    border-color: rgba(231, 189, 87, 0.15);
+  }
+}
+
+// ============================================================
+// Search
+// ============================================================
+
+.search-bar {
+  border: 1px solid var(--zt-amber-dim) !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: var(--zt-amber) !important;
+    box-shadow: 0 0 0 3px var(--zt-amber-pulse);
+  }
+}
+
+// ============================================================
+// Backlinks & TOC
+// ============================================================
+
+.backlinks h3,
+.toc h3 {
+  color: var(--zt-amber);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75em;
+}
+
+.toc li a:hover {
+  color: var(--zt-amber);
+}
+
+// ============================================================
+// Footer
+// ============================================================
+
+footer {
+  border-top: 1px solid var(--zt-amber-dim);
+  color: var(--gray);
+  font-size: 0.8em;
+
+  a {
+    color: var(--zt-amber);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
