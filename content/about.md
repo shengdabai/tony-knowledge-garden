@@ -30,8 +30,8 @@ My background spans elite sports, international education, and AI product develo
 |----------|-------|
 | Chinese | Native |
 | English | Professional fluency |
-| German | Learning |
-| Japanese | Learning |
+| German | Intermediate |
+| French | Learning |
 | Spanish | Learning |
 
 ### Background
