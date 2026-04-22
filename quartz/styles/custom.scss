@@ -413,3 +413,151 @@ footer {
     height: 200px;
   }
 }
+
+// ============================================================
+// About / Profile Page — Hero & Bio Styling
+// ============================================================
+
+// Detect about page via first h1 content won't work in CSS,
+// so we style elements that appear on the about page universally
+// and they enhance naturally without breaking other pages.
+
+// Profile hero: the first h1 on about.md gets special treatment
+article h1:first-of-type {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.25em;
+}
+
+// Subtitle line (bold immediately after h1)
+article h1:first-of-type + p > strong:only-child,
+article h1:first-of-type + p {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--zt-amber);
+  opacity: 0.9;
+}
+
+// Horizontal rules as section dividers
+article hr {
+  border: none;
+  position: relative;
+  margin: 2.5em 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--zt-amber-dim) 30%, rgba(231,189,87,0.3) 50%, var(--zt-amber-dim) 70%, transparent 100%);
+
+  &::after {
+    content: "✦";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--light);
+    padding: 0 0.5em;
+    color: var(--zt-amber);
+    font-size: 0.7em;
+    opacity: 0.7;
+  }
+}
+
+// Section h2 headings — amber left accent bar
+article h2 {
+  position: relative;
+  padding-left: 1em;
+  border-bottom: none;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.15em;
+    bottom: 0.1em;
+    width: 3px;
+    background: linear-gradient(180deg, var(--zt-amber) 0%, var(--zt-amber-deep) 100%);
+    border-radius: 2px;
+  }
+}
+
+// H3 subheadings
+article h3 {
+  color: var(--zt-amber);
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-top: 1.75em;
+}
+
+// Inline code as tech-stack badges
+article p code, article li code {
+  background: var(--zt-amber-soft);
+  border: 1px solid var(--zt-amber-dim);
+  border-radius: 4px;
+  padding: 1px 7px;
+  color: var(--zt-amber);
+  font-size: 0.83em;
+  font-family: "JetBrains Mono", monospace;
+  white-space: nowrap;
+}
+
+// Blockquote hero (the opening quote)
+article > blockquote:first-of-type {
+  border-left: 3px solid var(--zt-amber);
+  background: linear-gradient(135deg, rgba(231,189,87,0.08) 0%, rgba(231,189,87,0.03) 100%);
+  border-radius: 0 12px 12px 0;
+  padding: 1em 1.5em;
+  font-size: 1.05em;
+  font-style: italic;
+  color: var(--zt-amber);
+  margin: 1.5em 0;
+  box-shadow: inset 0 0 30px rgba(231,189,87,0.04);
+}
+
+// Tables on about page — refined
+article table {
+  th {
+    font-size: 0.78em;
+    letter-spacing: 0.06em;
+  }
+
+  // Status column: highlight active items
+  td:last-child {
+    font-size: 0.85em;
+  }
+}
+
+// "What I'm Building" table — emoji first column
+article table td:first-child {
+  font-size: 1em;
+  white-space: nowrap;
+}
+
+// Connect section links
+article ul li a[href^="mailto"],
+article ul li a[href^="https://"] {
+  color: var(--zt-amber);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid var(--zt-amber-dim);
+  transition: border-color var(--zt-transition), color var(--zt-transition);
+
+  &:hover {
+    border-color: var(--zt-amber);
+    color: var(--zt-amber-light);
+    text-shadow: 0 0 10px var(--zt-amber-glow);
+  }
+}
+
+// Footnote / closing italic
+article > p:last-child em {
+  display: block;
+  margin-top: 2em;
+  padding-top: 1em;
+  border-top: 1px solid var(--zt-amber-dim);
+  color: var(--gray);
+  font-size: 0.82em;
+  text-align: center;
+  font-style: italic;
+}

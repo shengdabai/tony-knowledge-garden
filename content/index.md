@@ -20,10 +20,13 @@ This is my public knowledge garden: a living collection of ideas from **200+ hou
 - **[[中文教学/金句精选/|Teaching Quotes]]** — Insights from real Chinese teaching sessions
 - **[[Projects/README|Open Source Projects]]** — 15 projects on GitHub [@shengdabai](https://github.com/shengdabai)
 
-## About me
+## About Me
+
+I'm **Tony Sheng** — Chinese language coach, AI product builder, and national-level Kung Fu athlete turned educator.
 
 I run **[Z TURNS](https://zturnsgo.com)** — a Chinese learning platform for global individuals and teams. I also build AI tools, teach Mandarin one-on-one, and write about the intersection of language, technology, and learning.
 
+→ **[[about|Full profile & what I'm building →]]**  
 → [Start learning Chinese](https://zturnsgo.com/start-free.html)  
 → [GitHub: @shengdabai](https://github.com/shengdabai)  
 → [YouTube: @zturns-zheteng](https://www.youtube.com/@zturns-zheteng)
