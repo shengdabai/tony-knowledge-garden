@@ -405,6 +405,48 @@ footer {
 }
 
 // ============================================================
+// Explorer — unified font size + About Tony highlight
+// ============================================================
+
+// Unify all explorer items to same font size
+.explorer ul li > a {
+  font-size: 0.95rem !important;
+  font-family: var(--headerFont);
+  color: var(--secondary) !important;
+  opacity: 0.82;
+  transition: color var(--zt-transition), opacity var(--zt-transition);
+
+  &:hover {
+    color: var(--tertiary) !important;
+    opacity: 1;
+    text-shadow: none;
+  }
+
+  &.active {
+    color: var(--tertiary) !important;
+    opacity: 1;
+  }
+}
+
+// About page link in explorer — amber + pointer icon
+.explorer ul li > a[href="/about"] {
+  color: var(--zt-amber) !important;
+  opacity: 1 !important;
+  font-weight: 600;
+
+  &::before {
+    content: "→ ";
+    color: var(--zt-amber);
+    font-weight: 700;
+  }
+
+  &:hover {
+    color: var(--zt-amber-light) !important;
+    text-shadow: 0 0 8px var(--zt-amber-glow);
+  }
+}
+
+// ============================================================
 // Responsive
 // ============================================================
 
