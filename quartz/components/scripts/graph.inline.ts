@@ -50,6 +50,15 @@ type LinkRenderData = GraphicsInfo & {
 type NodeRenderData = GraphicsInfo & {
   simulationData: NodeData
   label: Text
+  glowGfx: Graphics
+  pulsePhase: number
+}
+
+// Particle on a link edge
+type Particle = {
+  progress: number  // 0..1 along the edge
+  speed: number
+  linkIndex: number
 }
 
 const localStorageKey = "graph-visited"
@@ -184,24 +193,33 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     "--dark",
     "--darkgray",
     "--bodyFont",
+    "--zt-amber",
   ] as const
   const computedStyleMap = cssVars.reduce(
     (acc, key) => {
-      acc[key] = getComputedStyle(document.documentElement).getPropertyValue(key)
+      acc[key] = getComputedStyle(document.documentElement).getPropertyValue(key).trim()
       return acc
     },
     {} as Record<(typeof cssVars)[number], string>,
   )
 
+  // Z TURNS amber palette (fallback if CSS var not loaded)
+  const ZT_AMBER   = computedStyleMap["--zt-amber"] || "#e7bd57"
+  const ZT_VISITED = computedStyleMap["--tertiary"]  || "#8faa6e"
+  const ZT_TAG     = "#a78bfa"  // soft violet for tags
+  const ZT_CURRENT = "#ffffff"  // white core for current node
+
   // calculate color
   const color = (d: NodeData) => {
     const isCurrent = d.id === slug
     if (isCurrent) {
-      return computedStyleMap["--secondary"]
-    } else if (visited.has(d.id) || d.id.startsWith("tags/")) {
-      return computedStyleMap["--tertiary"]
+      return ZT_CURRENT
+    } else if (d.id.startsWith("tags/")) {
+      return ZT_TAG
+    } else if (visited.has(d.id)) {
+      return ZT_VISITED
     } else {
-      return computedStyleMap["--gray"]
+      return ZT_AMBER
     }
   }
 
@@ -209,7 +227,14 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     const numLinks = graphData.links.filter(
       (l) => l.source.id === d.id || l.target.id === d.id,
     ).length
-    return 2 + Math.sqrt(numLinks)
+    // More dramatic size scaling: hubs are much larger
+    return 3 + Math.pow(numLinks, 0.65) * 1.8
+  }
+
+  // Parse hex color to 0xRRGGBB number for Pixi
+  function hexToNum(hex: string): number {
+    const h = hex.replace("#", "")
+    return parseInt(h.length === 3 ? h.split("").map((c) => c + c).join("") : h, 16)
   }
 
   let hoveredNodeId: string | null = null
@@ -254,15 +279,8 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     const tweenGroup = new TweenGroup()
 
     for (const l of linkRenderData) {
-      let alpha = 1
-
-      // if we are hovering over a node, we want to highlight the immediate neighbours
-      // with full alpha and the rest with default alpha
-      if (hoveredNodeId) {
-        alpha = l.active ? 1 : 0.2
-      }
-
-      l.color = l.active ? computedStyleMap["--gray"] : computedStyleMap["--lightgray"]
+      let alpha = hoveredNodeId ? (l.active ? 0.75 : 0.08) : 0.25
+      l.color = l.active ? "#ffffff" : ZT_AMBER
       tweenGroup.add(new Tweened<LinkRenderData>(l).to({ alpha }, 200))
     }
 
@@ -323,12 +341,13 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     for (const n of nodeRenderData) {
       let alpha = 1
 
-      // if we are hovering over a node, we want to highlight the immediate neighbours
       if (hoveredNodeId !== null && focusOnHover) {
-        alpha = n.active ? 1 : 0.2
+        alpha = n.active ? 1 : 0.15
       }
 
       tweenGroup.add(new Tweened<Graphics>(n.gfx, tweenGroup).to({ alpha }, 200))
+      // keep glowGfx alpha in sync (handled in animate loop via n.alpha)
+      n.alpha = alpha
     }
 
     tweenGroup.getAll().forEach((tw) => tw.start())
@@ -366,58 +385,87 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   const stage = app.stage
   stage.interactive = false
 
-  const labelsContainer = new Container<Text>({ zIndex: 3, isRenderGroup: true })
-  const nodesContainer = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
-  const linkContainer = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
-  stage.addChild(nodesContainer, labelsContainer, linkContainer)
+  const labelsContainer  = new Container<Text>({ zIndex: 4, isRenderGroup: true })
+  const nodesContainer   = new Container<Graphics>({ zIndex: 3, isRenderGroup: true })
+  const glowContainer    = new Container<Graphics>({ zIndex: 2, isRenderGroup: true })
+  const linkContainer    = new Container<Graphics>({ zIndex: 1, isRenderGroup: true })
+  const particleContainer = new Container<Graphics>({ zIndex: 5, isRenderGroup: true })
+  stage.addChild(linkContainer, glowContainer, nodesContainer, particleContainer, labelsContainer)
+
+  // Particles for link animation
+  const particles: Particle[] = []
+  const particleGfxPool: Graphics[] = []
 
   for (const n of graphData.nodes) {
     const nodeId = n.id
+    const isTagNode = nodeId.startsWith("tags/")
+    const isCurrent = nodeId === slug
+    const nodeColor = color(n)
+    const r = nodeRadius(n)
 
     const label = new Text({
       interactive: false,
       eventMode: "none",
       text: n.text,
       alpha: 0,
-      anchor: { x: 0.5, y: 1.2 },
+      anchor: { x: 0.5, y: 1.3 },
       style: {
         fontSize: fontSize * 15,
-        fill: computedStyleMap["--dark"],
+        fill: isCurrent ? "#ffffff" : ZT_AMBER,
         fontFamily: computedStyleMap["--bodyFont"],
+        fontWeight: isCurrent ? "700" : "400",
+        dropShadow: {
+          color: isCurrent ? "#ffffff" : ZT_AMBER,
+          blur: 8,
+          alpha: 0.8,
+          distance: 0,
+        },
       },
       resolution: window.devicePixelRatio * 4,
     })
     label.scale.set(1 / scale)
 
+    // Outer glow ring (large, very transparent)
+    const glowGfx = new Graphics({ interactive: false, eventMode: "none" })
+    glowGfx.circle(0, 0, r * 3.5).fill({ color: hexToNum(nodeColor), alpha: 0.06 })
+    glowGfx.circle(0, 0, r * 2.2).fill({ color: hexToNum(nodeColor), alpha: 0.1 })
+    glowContainer.addChild(glowGfx)
+
     let oldLabelOpacity = 0
-    const isTagNode = nodeId.startsWith("tags/")
     const gfx = new Graphics({
       interactive: true,
       label: nodeId,
       eventMode: "static",
-      hitArea: new Circle(0, 0, nodeRadius(n)),
+      hitArea: new Circle(0, 0, r * 2),
       cursor: "pointer",
     })
-      .circle(0, 0, nodeRadius(n))
-      .fill({ color: isTagNode ? computedStyleMap["--light"] : color(n) })
+
+    // Draw layered node: border ring + fill
+    if (isCurrent) {
+      // Current node: bright white core with strong amber ring
+      gfx.circle(0, 0, r + 2.5).fill({ color: 0xe7bd57, alpha: 0.5 })
+      gfx.circle(0, 0, r).fill({ color: 0xffffff, alpha: 1 })
+    } else if (isTagNode) {
+      // Tag node: violet with dashed-ish ring
+      gfx.circle(0, 0, r + 1.5).fill({ color: 0xa78bfa, alpha: 0.3 })
+      gfx.circle(0, 0, r).fill({ color: 0xa78bfa, alpha: 0.85 })
+    } else {
+      // Regular node: amber with subtle outer ring
+      gfx.circle(0, 0, r + 1.5).fill({ color: hexToNum(ZT_AMBER), alpha: 0.25 })
+      gfx.circle(0, 0, r).fill({ color: hexToNum(nodeColor), alpha: 0.95 })
+    }
+
+    gfx
       .on("pointerover", (e) => {
         updateHoverInfo(e.target.label)
         oldLabelOpacity = label.alpha
-        if (!dragging) {
-          renderPixiFromD3()
-        }
+        if (!dragging) renderPixiFromD3()
       })
       .on("pointerleave", () => {
         updateHoverInfo(null)
         label.alpha = oldLabelOpacity
-        if (!dragging) {
-          renderPixiFromD3()
-        }
+        if (!dragging) renderPixiFromD3()
       })
-
-    if (isTagNode) {
-      gfx.stroke({ width: 2, color: computedStyleMap["--tertiary"] })
-    }
 
     nodesContainer.addChild(gfx)
     labelsContainer.addChild(label)
@@ -425,28 +473,42 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     const nodeRenderDatum: NodeRenderData = {
       simulationData: n,
       gfx,
+      glowGfx,
       label,
-      color: color(n),
+      color: nodeColor,
       alpha: 1,
       active: false,
+      pulsePhase: Math.random() * Math.PI * 2,
     }
-
     nodeRenderData.push(nodeRenderDatum)
   }
 
-  for (const l of graphData.links) {
+  for (let i = 0; i < graphData.links.length; i++) {
+    const l = graphData.links[i]
     const gfx = new Graphics({ interactive: false, eventMode: "none" })
     linkContainer.addChild(gfx)
 
     const linkRenderDatum: LinkRenderData = {
       simulationData: l,
       gfx,
-      color: computedStyleMap["--lightgray"],
-      alpha: 1,
+      color: ZT_AMBER,
+      alpha: 0.25,
       active: false,
     }
-
     linkRenderData.push(linkRenderDatum)
+
+    // Spawn 1-2 particles per link
+    const numParticles = Math.random() < 0.5 ? 1 : 2
+    for (let p = 0; p < numParticles; p++) {
+      const pgfx = new Graphics({ interactive: false, eventMode: "none" })
+      particleContainer.addChild(pgfx)
+      particleGfxPool.push(pgfx)
+      particles.push({
+        progress: Math.random(),
+        speed: 0.0008 + Math.random() * 0.0012,
+        linkIndex: i,
+      })
+    }
   }
 
   let currentTransform = zoomIdentity
@@ -524,24 +586,77 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
   }
 
   let stopAnimation = false
+  let lastTime = 0
   function animate(time: number) {
     if (stopAnimation) return
+    const dt = Math.min(time - lastTime, 50)
+    lastTime = time
+
+    // --- Nodes & glow pulsing ---
     for (const n of nodeRenderData) {
       const { x, y } = n.simulationData
       if (!x || !y) continue
-      n.gfx.position.set(x + width / 2, y + height / 2)
-      if (n.label) {
-        n.label.position.set(x + width / 2, y + height / 2)
-      }
+      const cx = x + width / 2
+      const cy = y + height / 2
+
+      n.gfx.position.set(cx, cy)
+      if (n.label) n.label.position.set(cx, cy)
+
+      // Animate glow ring scale with sine wave
+      n.pulsePhase = (n.pulsePhase + dt * 0.0015) % (Math.PI * 2)
+      const pulse = 0.85 + Math.sin(n.pulsePhase) * 0.15
+      n.glowGfx.position.set(cx, cy)
+      n.glowGfx.scale.set(pulse)
+      n.glowGfx.alpha = n.alpha * (0.6 + Math.sin(n.pulsePhase) * 0.4)
     }
 
+    // --- Links ---
     for (const l of linkRenderData) {
       const linkData = l.simulationData
+      const sx = linkData.source.x! + width / 2
+      const sy = linkData.source.y! + height / 2
+      const tx = linkData.target.x! + width / 2
+      const ty = linkData.target.y! + height / 2
+
       l.gfx.clear()
-      l.gfx.moveTo(linkData.source.x! + width / 2, linkData.source.y! + height / 2)
       l.gfx
-        .lineTo(linkData.target.x! + width / 2, linkData.target.y! + height / 2)
-        .stroke({ alpha: l.alpha, width: 1, color: l.color })
+        .moveTo(sx, sy)
+        .lineTo(tx, ty)
+        .stroke({ alpha: l.alpha, width: l.active ? 1.5 : 0.8, color: l.color })
+    }
+
+    // --- Particles flowing along links ---
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i]
+      const pgfx = particleGfxPool[i]
+      if (!pgfx) continue
+
+      p.progress += p.speed * dt
+      if (p.progress > 1) p.progress -= 1
+
+      const link = linkRenderData[p.linkIndex]
+      if (!link) continue
+
+      const ld = link.simulationData
+      const sx = ld.source.x! + width / 2
+      const sy = ld.source.y! + height / 2
+      const tx = ld.target.x! + width / 2
+      const ty = ld.target.y! + height / 2
+
+      const px = sx + (tx - sx) * p.progress
+      const py = sy + (ty - sy) * p.progress
+
+      pgfx.clear()
+      // Only show particles on visible links
+      if (link.alpha > 0.1) {
+        pgfx
+          .circle(px, py, 1.5)
+          .fill({ color: 0xffffff, alpha: link.alpha * 0.9 })
+        // Tiny glow halo
+        pgfx
+          .circle(px, py, 3.5)
+          .fill({ color: 0xe7bd57, alpha: link.alpha * 0.25 })
+      }
     }
 
     tweens.forEach((t) => t.update(time))
