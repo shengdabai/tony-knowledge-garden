@@ -7,7 +7,7 @@ description: Public notes on AI, Chinese teaching, learning science, business th
 
 Welcome. I'm Tony — Chinese teacher, AI builder, and obsessive note-taker.
 
-This is my public knowledge garden: a living collection of ideas from **200+ hours of teaching**, reading, and building. Not a blog — more like thinking out loud, made permanent.
+This is my public knowledge garden: a living collection of ideas from **5000+ hours of teaching**, reading, and building. Not a blog — more like thinking out loud, made permanent.
 
 ## What's here
 
