@@ -94,7 +94,7 @@ Over **6,000+ hours** of teaching, I've worked with **200+ Chinese learners** an
 
 ## Connect
 
-- ✉️ tonyshengchangchun@gmail.com
+- ✉️ zturnsuk@gmail.com
 - 🌐 [zturnsgo.com](https://zturnsgo.com)
 - 🐙 [github.com/shengdabai](https://github.com/shengdabai)
 - 📺 [YouTube @zturns-zheteng](https://www.youtube.com/@zturns-zheteng)
@@ -190,7 +190,7 @@ Over **6,000+ hours** of teaching, I've worked with **200+ Chinese learners** an
 
 ## 联系方式
 
-- ✉️ tonyshengchangchun@gmail.com
+- ✉️ zturnsuk@gmail.com
 - 🌐 [zturnsgo.com](https://zturnsgo.com)
 - 🐙 [github.com/shengdabai](https://github.com/shengdabai)
 - 📺 [YouTube @zturns-zheteng](https://www.youtube.com/@zturns-zheteng)
