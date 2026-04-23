@@ -77,11 +77,11 @@ Over **6,000+ hours** of teaching, I've worked with **200+ Chinese learners** an
 
 | Product | Pricing | Status |
 |---------|---------|--------|
-| 📱 Chinese Learning Web App | $20/mo · $100/yr | In development |
-| 📚 Amazon KDP E-Book Series | Free → $9.99 → $19.95 | Planned |
-| 🎬 AI Short Video Pipeline | 3–5 clips/day | Building |
-| 🎥 AI-Animated YouTube Channel | — | Planned |
-| 📖 Interlinear Textbook Series | — | Concept ready |
+| 📱 Chinese Learning Web App | $100/yr | Live |
+| 📚 Amazon KDP E-Book Series | Free – $9.99 | Live |
+| 🎬 AI Short Video Pipeline | Free | Live |
+| 🎥 AI-Animated YouTube Channel | Free | Live |
+| 📖 Interlinear Textbook Series | Free | Live |
 | 🤖 Claude Skills & MCP Tools | Open source | Active |
 
 ---
@@ -173,11 +173,11 @@ Over **6,000+ hours** of teaching, I've worked with **200+ Chinese learners** an
 
 | 产品 | 定价 | 状态 |
 |------|------|------|
-| 📱 中文学习 Web App | $20/月 · $100/年 | 开发中 |
-| 📚 Amazon KDP 电子书系列 | 免费 → $9.99 → $19.95 | 规划中 |
-| 🎬 AI 短视频流水线 | 每天 3–5 条 | 构建中 |
-| 🎥 AI 动画 YouTube 频道 | — | 规划中 |
-| 📖 对照教材系列 | — | 方案就绪 |
+| 📱 中文学习 Web App | $100/年 | 上线 |
+| 📚 Amazon KDP 电子书系列 | 免费 – $9.99 | 上线 |
+| 🎬 AI 短视频流水线 | 免费 | 上线 |
+| 🎥 AI 动画 YouTube 频道 | 免费 | 上线 |
+| 📖 对照教材系列 | 免费 | 上线 |
 | 🤖 Claude Skills & MCP 工具 | 开源 | 运行中 |
 
 ---
